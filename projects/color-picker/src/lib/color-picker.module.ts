@@ -48,9 +48,7 @@ import { ColorAdapter } from './services';
   exports: [
     NgxMatColorToggleComponent,
     NgxMatColorPickerInput,
-    NgxMatColorPickerComponent
-  ],
-  entryComponents: [
+    NgxMatColorPickerComponent,
     NgxMatColorPickerContentComponent
   ],
   providers: [

@@ -4,7 +4,7 @@ import { ChangeDetectorRef, Component, DoCheck, ElementRef, forwardRef, Input, O
 import { AbstractControl, ControlValueAccessor, FormGroupDirective, NgControl, NgForm, ValidatorFn, Validators } from '@angular/forms';
 import { CanUpdateErrorState, ErrorStateMatcher, ThemePalette } from '@angular/material/core';
 import { MatFormFieldControl } from '@angular/material/form-field';
-import { _MatInputMixinBase } from '@angular/material/input';
+import { MatInput } from '@angular/material/input';
 import { Subject } from 'rxjs';
 import { FileOrArrayFile } from './file-input-type';
 
@@ -28,7 +28,7 @@ export class NgxMatFileInputIcon { }
   ],
   exportAs: 'ngx-mat-file-input'
 })
-export class NgxMatFileInputComponent extends _MatInputMixinBase implements MatFormFieldControl<FileOrArrayFile>,
+export class NgxMatFileInputComponent extends MatInput implements MatFormFieldControl<FileOrArrayFile>,
   OnDestroy, DoCheck, CanUpdateErrorState, ControlValueAccessor {
 
   @ViewChild('inputFile') private _inputFileRef: ElementRef;
