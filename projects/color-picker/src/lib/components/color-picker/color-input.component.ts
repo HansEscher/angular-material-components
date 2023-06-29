@@ -50,8 +50,8 @@ export const MAT_COLORPICKER_VALIDATORS: any = {
 export class NgxMatColorPickerInput implements ControlValueAccessor, OnInit, OnDestroy, Validator {
   _picker!: NgxMatColorPickerComponent;
 
-  @HostBinding('attr.aria-haspopup') ariaPopup = this._picker ? "dialog" : null;
-  @HostBinding('attr.aria-owns') ariaOwns = (this._picker?.opened && !!(this._picker as any)['id'] );
+  // @HostBinding('attr.aria-haspopup') ariaPopup = this._picker ? "dialog" : null;
+  // @HostBinding('attr.aria-owns') ariaOwns = (this._picker?.opened && !!(this._picker as any)['id'] );
 
   @Input()
   set ngxMatColorPicker(value: NgxMatColorPickerComponent) {

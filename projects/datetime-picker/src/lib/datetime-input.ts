@@ -65,8 +65,8 @@ export class MatDatetimePickerInputEvent<D> {
 export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, Validator {
     _datepicker!: NgxMatDatetimePicker<D>;
 
-    @HostBinding('attr.aria-haspopup') ariaHasPopup = this._datepicker ? "dialog" : null;
-    @HostBinding('attr.aria-owns') ariaOwns = (this._datepicker?.opened && this._datepicker.id) || null;
+    // @HostBinding('attr.aria-haspopup') ariaHasPopup = this._datepicker ? "dialog" : null;
+    // @HostBinding('attr.aria-owns') ariaOwns = (this._datepicker?.opened && this._datepicker.id) || null;
     @HostBinding('attr.min') attrMin = this.min ? this._dateAdapter.toIso8601(this.min) : null;
     @HostBinding('attr.max') attrMax = this.max ? this._dateAdapter.toIso8601(this.max) : null;
 
