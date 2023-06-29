@@ -1,8 +1,8 @@
 {
   "name": "@angular-material-components/file-input",
-  "version": "9.0.0",
+  "version": "16.0.0",
   "description": "Angular Material File Input",
-  "author": "HO Hong Quan",
+  "author": "HO Hong Quan; upgrade to Angular@16 + material@16/use legacy by Hans Escher",
   "repository": {
     "type": "git",
     "url": "https://github.com/h2qutc/angular-material-components.git"

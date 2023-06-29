@@ -1,8 +1,8 @@
 {
   "name": "@angular-material-components/moment-adapter",
-  "version": "9.0.0",
+  "version": "16.0.0",
   "description": "Angular Material Moment Adapter",
-  "author": "HO Hong Quan",
+  "author": "HO Hong Quan; upgrade to Angular@16 + material@16/use legacy by Hans Escher",
   "license": "MIT",
   "repository": {
     "type": "git",
