@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { NgxMatDateAdapter, NGX_MAT_DATE_FORMATS } from 'projects/datetime-picker/src';
+import { NgxMatDateAdapter }    from '../../../datetime-picker/src/lib/core/date-adapter';
+import { NGX_MAT_DATE_FORMATS } from '../../../datetime-picker/src/lib/core/date-formats';
 // from '@angular-material-components/datetime-picker';
 import { NgModule } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';

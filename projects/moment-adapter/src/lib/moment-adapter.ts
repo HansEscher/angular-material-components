@@ -14,10 +14,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 // the `default as` syntax.
 // TODO(mmalerba): See if we can clean this up at some point.
 import * as _moment from 'moment';
-// eslint-disable-next-line no-duplicate-imports
 import { default as _rollupMoment, Moment, MomentFormatSpecification, MomentInput } from 'moment';
-import { NgxMatDateAdapter } from 'projects/datetime-picker/src';
-//  from '@angular-material-components/datetime-picker';
+import { NgxMatDateAdapter } from '../../../datetime-picker/src/lib/core/date-adapter';
 
 const moment = _rollupMoment || _moment;
 
