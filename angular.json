@@ -267,7 +267,6 @@
       }
     }
   },
-  "defaultProject": "angular-material-components",
   "schematics": {
     "@schematics/angular:module": {
       "prefix": "ngx-mat"
