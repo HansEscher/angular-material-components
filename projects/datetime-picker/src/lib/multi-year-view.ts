@@ -54,6 +54,7 @@ export const yearsPerRow = 4;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
@@ -61,7 +62,7 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   @Input()
   get activeDate(): D { return this._activeDate; }
   set activeDate(value: D) {
-    let oldActiveDate = this._activeDate;
+    const oldActiveDate = this._activeDate;
     const validDate =
         this._getValidDateOrNull(this._dateAdapter.deserialize(value)) || this._dateAdapter.today();
     this._activeDate = this._dateAdapter.clampDate(validDate, this.minDate, this.maxDate);
@@ -85,7 +86,7 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
     this._setSelectedYear(value);
   }
-  private _selected: DateRange<D> | D | null;
+  private _selected!: DateRange<D> | D | null;
 
 
   /** The minimum selectable date. */
@@ -94,7 +95,7 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   set minDate(value: D | null) {
     this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _minDate: D | null;
+  private _minDate: D | null = null;
 
   /** The maximum selectable date. */
   @Input()
@@ -102,10 +103,10 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   set maxDate(value: D | null) {
     this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _maxDate: D | null;
+  private _maxDate: D | null = null;
 
   /** A function used to filter which dates are selectable. */
-  @Input() dateFilter: (date: D) => boolean;
+  @Input() dateFilter!: (date: D) => boolean;
 
   /** Emits when a new year is selected. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
@@ -117,16 +118,16 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   @Output() readonly activeDateChange: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(NgxMatCalendarBody) _matCalendarBody: NgxMatCalendarBody;
+  @ViewChild(NgxMatCalendarBody) _matCalendarBody!: NgxMatCalendarBody;
 
   /** Grid of calendar cells representing the currently displayed years. */
-  _years: NgxMatCalendarCell[][];
+  _years!: NgxMatCalendarCell[][];
 
   /** The year that today falls on. */
-  _todayYear: number;
+  _todayYear!: number;
 
   /** The year of the selected date. Null if the selected date is null. */
-  _selectedYear: number | null;
+  _selectedYear: number | null = null;
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               @Optional() public _dateAdapter: NgxMatDateAdapter<D>,
@@ -177,8 +178,8 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
   _yearSelected(event: NgxMatCalendarUserEvent<number>) {
     const year = event.value;
     this.yearSelected.emit(this._dateAdapter.createDate(year, 0, 1));
-    let month = this._dateAdapter.getMonth(this.activeDate);
-    let daysInMonth =
+    const month = this._dateAdapter.getMonth(this.activeDate);
+    const daysInMonth =
         this._dateAdapter.getNumDaysInMonth(this._dateAdapter.createDate(year, month, 1));
     this.selectedChange.emit(this._dateAdapter.createDate(year, month,
         Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth)));
@@ -249,7 +250,7 @@ export class NgxMatMultiYearView<D> implements AfterContentInit, OnDestroy {
 
   /** Creates an MatCalendarCell for the given year. */
   private _createCellForYear(year: number) {
-    let yearName = this._dateAdapter.getYearName(this._dateAdapter.createDate(year, 0, 1));
+    const yearName = this._dateAdapter.getYearName(this._dateAdapter.createDate(year, 0, 1));
     return new NgxMatCalendarCell(year, yearName, yearName, this._shouldEnableYear(year));
   }
 

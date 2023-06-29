@@ -18,16 +18,16 @@ export class DemoTimeComponent implements OnInit {
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
 
-  public codeTimePicker = `<ngx-mat-timepicker 
-              [(ngModel)]="date" [disabled]="disabled" 
+  public codeTimePicker = `<ngx-mat-timepicker
+              [(ngModel)]="date" [disabled]="disabled"
               [showSpinners]="showSpinners"
-              [stepHour]="stepHour" [stepMinute]="stepMinute" 
-              [stepSecond]="stepSecond" 
+              [stepHour]="stepHour" [stepMinute]="stepMinute"
+              [stepSecond]="stepSecond"
               [showSeconds]="showSeconds">
   </ngx-mat-timepicker>`;
 
 
-  public date: Date;
+  public date: Date | null = null;
 
   public options = [
     { value: true, label: 'True' },

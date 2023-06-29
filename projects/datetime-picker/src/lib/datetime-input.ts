@@ -7,7 +7,7 @@
  */
 
 import { DOWN_ARROW } from '@angular/cdk/keycodes';
-import { Directive, ElementRef, EventEmitter, forwardRef, Inject, Input, OnDestroy, Optional, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, forwardRef, HostBinding, HostListener, Inject, Input, OnDestroy, Optional, Output } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatLegacyFormField as MatFormField } from '@angular/material/legacy-form-field';
@@ -60,21 +60,16 @@ export class MatDatetimePickerInputEvent<D> {
         MAT_DATEPICKER_VALIDATORS,
         { provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: NgxMatDatetimeInput },
     ],
-    host: {
-        '[attr.aria-haspopup]': '_datepicker ? "dialog" : null',
-        '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
-        '[attr.min]': 'min ? _dateAdapter.toIso8601(min) : null',
-        '[attr.max]': 'max ? _dateAdapter.toIso8601(max) : null',
-        '[disabled]': 'disabled',
-        '(input)': '_onInput($event.target.value)',
-        '(change)': '_onChange()',
-        '(blur)': '_onBlur()',
-        '(focus)': '_onFocus()',
-        '(keydown)': '_onKeydown($event)',
-    },
     exportAs: 'ngxMatDatetimePickerInput',
 })
 export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, Validator {
+    _datepicker!: NgxMatDatetimePicker<D>;
+
+    @HostBinding('attr.aria-haspopup') ariaHasPopup = this._datepicker ? "dialog" : null;
+    @HostBinding('attr.aria-owns') ariaOwns = (this._datepicker?.opened && this._datepicker.id) || null;
+    @HostBinding('attr.min') attrMin = this.min ? this._dateAdapter.toIso8601(this.min) : null;
+    @HostBinding('attr.max') attrMax = this.max ? this._dateAdapter.toIso8601(this.max) : null;
+
     /** The datepicker that this input is associated with. */
     @Input()
     set ngxMatDatetimePicker(value: NgxMatDatetimePicker<D>) {
@@ -86,7 +81,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this._datepicker._registerInput(this);
         this._datepickerSubscription.unsubscribe();
 
-        this._datepickerSubscription = this._datepicker._selectedChanged.subscribe((selected: D) => {
+        this._datepickerSubscription = this._datepicker._selectedChanged.subscribe((selected: D | null) => {
             this.value = selected;
             this._cvaOnChange(selected);
             this._onTouched();
@@ -94,7 +89,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
             this.dateChange.emit(new MatDatetimePickerInputEvent(this, this._elementRef.nativeElement));
         });
     }
-    _datepicker: NgxMatDatetimePicker<D>;
+
 
     /** Function that can be used to filter out dates within the datepicker. */
     @Input()
@@ -102,7 +97,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this._dateFilter = value;
         this._validatorOnChange();
     }
-    _dateFilter: (date: D | null) => boolean;
+    _dateFilter!: (date: D | null) => boolean;
 
     /** The value of the input. */
     @Input()
@@ -119,7 +114,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
             this._valueChange.emit(value);
         }
     }
-    private _value: D | null;
+    private _value: D | null = null;
 
     /** The minimum valid date. */
     @Input()
@@ -128,7 +123,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this._min = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
         this._validatorOnChange();
     }
-    private _min: D | null;
+    private _min: D | null = null;
 
     /** The maximum valid date. */
     @Input()
@@ -137,9 +132,10 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this._max = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
         this._validatorOnChange();
     }
-    private _max: D | null;
+    private _max: D | null = null;
 
     /** Whether the datepicker-input is disabled. */
+    @HostBinding('disabled')
     @Input()
     get disabled(): boolean { return !!this._disabled; }
     set disabled(value: boolean) {
@@ -159,7 +155,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
             element.blur();
         }
     }
-    private _disabled: boolean;
+    private _disabled!: boolean;
 
     /** Emits when a `change` event is fired on this `<input>`. */
     @Output() readonly dateChange: EventEmitter<MatDatetimePickerInputEvent<D>> =
@@ -236,6 +232,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
 
         // Update the displayed date when the locale changes.
         this._localeSubscription = _dateAdapter.localeChanges.subscribe(() => {
+            // eslint-disable-next-line no-self-assign
             this.value = this.value;
         });
     }
@@ -293,6 +290,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this.disabled = isDisabled;
     }
 
+    @HostListener('keydown', ['$event'])
     _onKeydown(event: KeyboardEvent) {
         const isAltDownArrow = event.altKey && event.keyCode === DOWN_ARROW;
 
@@ -300,6 +298,12 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
             this._datepicker.open();
             event.preventDefault();
         }
+    }
+
+    @HostListener('input', ['$event'])
+    callInput(ev: Event) {
+        const target = ev.target as any;
+        return this._onInput(target['value']);
     }
 
     _onInput(value: string) {
@@ -321,6 +325,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         }
     }
 
+    @HostListener('change', ['$event'])
     _onChange() {
         this.dateChange.emit(new MatDatetimePickerInputEvent(this, this._elementRef.nativeElement));
     }
@@ -331,6 +336,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
     }
 
     /** Handles blur events on the input. */
+    @HostListener('blur', ['$event'])
     _onBlur() {
         // Reformat the input only if we have a valid value.
         if (this.value) {
@@ -341,6 +347,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
     }
 
     /** Handles focus events on the input. */
+    @HostListener('focus', ['$event'])
     _onFocus() {
         // Close datetime picker if opened
         if (this._datepicker && this._datepicker.opened) {

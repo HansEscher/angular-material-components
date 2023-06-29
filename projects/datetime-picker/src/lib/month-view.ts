@@ -60,6 +60,7 @@ const DAYS_PER_WEEK = 7;
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
@@ -91,7 +92,7 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
 
     this._setRanges(this._selected);
   }
-  private _selected: DateRange<D> | D | null;
+  private _selected: DateRange<D> | D | null = null;
 
   /** The minimum selectable date. */
   @Input()
@@ -99,7 +100,7 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
   set minDate(value: D | null) {
     this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _minDate: D | null;
+  private _minDate: D | null = null;
 
   /** The maximum selectable date. */
   @Input()
@@ -107,19 +108,19 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
   set maxDate(value: D | null) {
     this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _maxDate: D | null;
+  private _maxDate: D | null = null;
 
   /** Function used to filter which dates are selectable. */
-  @Input() dateFilter: (date: D) => boolean;
+  @Input() dateFilter!: (date: D) => boolean;
 
   /** Function that can be used to add custom CSS classes to dates. */
-  @Input() dateClass: (date: D) => NgxMatCalendarCellCssClasses;
+  @Input() dateClass!: (date: D) => NgxMatCalendarCellCssClasses;
 
   /** Start of the comparison range. */
-  @Input() comparisonStart: D | null;
+  @Input() comparisonStart: D | null = null;
 
   /** End of the comparison range. */
-  @Input() comparisonEnd: D | null;
+  @Input() comparisonEnd: D | null = null;
 
   /** Emits when a new date is selected. */
   @Output() readonly selectedChange: EventEmitter<D | null> = new EventEmitter<D | null>();
@@ -132,43 +133,43 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
   @Output() readonly activeDateChange: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(NgxMatCalendarBody) _matCalendarBody: NgxMatCalendarBody;
+  @ViewChild(NgxMatCalendarBody) _matCalendarBody!: NgxMatCalendarBody;
 
   /** The label for this month (e.g. "January 2017"). */
-  _monthLabel: string;
+  _monthLabel!: string;
 
   /** Grid of calendar cells representing the dates of the month. */
-  _weeks: NgxMatCalendarCell[][];
+  _weeks!: NgxMatCalendarCell[][];
 
   /** The number of blank cells in the first row before the 1st of the month. */
-  _firstWeekOffset: number;
+  _firstWeekOffset!: number;
 
   /** Start value of the currently-shown date range. */
-  _rangeStart: number | null;
+  _rangeStart: number | null = null;
 
   /** End value of the currently-shown date range. */
-  _rangeEnd: number | null;
+  _rangeEnd: number | null = null;
 
   /** Start value of the currently-shown comparison date range. */
-  _comparisonRangeStart: number | null;
+  _comparisonRangeStart: number | null = null;
 
   /** End value of the currently-shown comparison date range. */
-  _comparisonRangeEnd: number | null;
+  _comparisonRangeEnd: number | null = null;
 
   /** Start of the preview range. */
-  _previewStart: number | null;
+  _previewStart: number | null = null;
 
   /** End of the preview range. */
-  _previewEnd: number | null;
+  _previewEnd: number | null = null;
 
   /** Whether the user is currently selecting a range of dates. */
-  _isRange: boolean;
+  _isRange!: boolean;
 
   /** The date of the month that today falls on. Null if today is in another month. */
-  _todayDate: number | null;
+  _todayDate: number | null = null;
 
   /** The names of the weekdays. */
-  _weekdays: {long: string, narrow: string}[];
+  _weekdays!: {long: string, narrow: string}[];
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
               @Optional() @Inject(NGX_MAT_DATE_FORMATS) private _dateFormats: NgxMatDateFormats,
@@ -300,7 +301,7 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
         this._dateAdapter.getMonthNames('short')[this._dateAdapter.getMonth(this.activeDate)]
             .toLocaleUpperCase();
 
-    let firstOfMonth = this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate),
+    const firstOfMonth = this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate),
         this._dateAdapter.getMonth(this.activeDate), 1);
     this._firstWeekOffset =
         (DAYS_PER_WEEK + this._dateAdapter.getDayOfWeek(firstOfMonth) -
@@ -342,7 +343,7 @@ export class NgxMatMonthView<D> implements AfterContentInit, OnDestroy {
     const longWeekdays = this._dateAdapter.getDayOfWeekNames('long');
 
     // Rotate the labels for days of the week based on the configured first day of the week.
-    let weekdays = longWeekdays.map((long, i) => {
+    const weekdays = longWeekdays.map((long, i) => {
         return {long, narrow: narrowWeekdays[i]};
     });
     this._weekdays = weekdays.slice(firstDayOfWeek).concat(weekdays.slice(0, firstDayOfWeek));

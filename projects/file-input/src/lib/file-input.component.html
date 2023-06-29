@@ -9,5 +9,5 @@
     <ng-content select="[ngxMatFileInputIcon]"></ng-content>
   </button>
 </div>
-<input type="file" #inputFile (change)="handleFiles($event.target.files)" class="input-file"
+<input type="file" #inputFile (change)="callHandleFiles($event)" class="input-file"
   [multiple]="multiple" [accept]="accept">

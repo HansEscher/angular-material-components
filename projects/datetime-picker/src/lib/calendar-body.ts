@@ -18,6 +18,7 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  HostBinding,
 } from '@angular/core';
 import {take} from 'rxjs/operators';
 
@@ -50,64 +51,70 @@ export interface NgxMatCalendarUserEvent<D> {
  * An internal component used to display calendar data in a table.
  * @docs-private
  */
+// maybe wrong ?
+// Rule "when you define a @Component angular allows to use that component as html element only."
+//      " If you want to use it as an attribute on an element then make a @Directive
+// disabled to keep code same.
+
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[ngx-mat-calendar-body]',
   templateUrl: 'calendar-body.html',
   styleUrls: ['calendar-body.scss'],
-  host: {
-    'class': 'ngx-mat-calendar-body',
-    'role': 'grid',
-    'aria-readonly': 'true'
-  },
   exportAs: 'NgxMatCalendarBody',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class NgxMatCalendarBody implements OnChanges, OnDestroy {
+  @HostBinding('class') hostClass = 'ngx-mat-calendar-body';
+  @HostBinding('role') hostRole = 'grid';
+  @HostBinding('aria-readonly') hostAriaReadOnly = true;
+
   /**
    * Used to skip the next focus event when rendering the preview range.
    * We need a flag like this, because some browsers fire focus events asynchronously.
    */
-  private _skipNextFocus: boolean;
+  private _skipNextFocus!: boolean;
 
   /** The label for the table. (e.g. "Jan 2017"). */
-  @Input() label: string;
+  @Input() label!: string;
 
   /** The cells to display in the table. */
-  @Input() rows: NgxMatCalendarCell[][];
+  @Input() rows!: NgxMatCalendarCell[][];
 
   /** The value in the table that corresponds to today. */
-  @Input() todayValue: number;
+  @Input() todayValue!: number;
 
   /** Start value of the selected date range. */
-  @Input() startValue: number;
+  @Input() startValue!: number;
 
   /** End value of the selected date range. */
-  @Input() endValue: number;
+  @Input() endValue!: number;
 
   /** The minimum number of free cells needed to fit the label in the first row. */
-  @Input() labelMinRequiredCells: number;
+  @Input() labelMinRequiredCells!: number;
 
   /** The number of columns in the table. */
-  @Input() numCols: number = 7;
+  @Input() numCols = 7;
 
   /** The cell number of the active cell in the table. */
-  @Input() activeCell: number = 0;
+  @Input() activeCell = 0;
 
   /** Whether a range is being selected. */
-  @Input() isRange: boolean = false;
+  @Input() isRange = false;
 
   /**
    * The aspect ratio (width / height) to use for the cells in the table. This aspect ratio will be
    * maintained even as the table resizes.
    */
-  @Input() cellAspectRatio: number = 1;
+  @Input() cellAspectRatio = 1;
 
   /** Start of the comparison range. */
-  @Input() comparisonStart: number | null;
+  @Input() comparisonStart: number | null = null;
 
   /** End of the comparison range. */
-  @Input() comparisonEnd: number | null;
+  @Input() comparisonEnd: number | null = null;
 
   /** Start of the preview range. */
   @Input() previewStart: number | null = null;
@@ -123,13 +130,13 @@ export class NgxMatCalendarBody implements OnChanges, OnDestroy {
   @Output() previewChange = new EventEmitter<NgxMatCalendarUserEvent<NgxMatCalendarCell | null>>();
 
   /** The number of blank cells to put at the beginning for the first row. */
-  _firstRowOffset: number;
+  _firstRowOffset!: number;
 
   /** Padding for the individual date cells. */
-  _cellPadding: string;
+  _cellPadding!: string;
 
   /** Width of an individual cell. */
-  _cellWidth: string;
+  _cellWidth!: string;
 
   constructor(private _elementRef: ElementRef<HTMLElement>, private _ngZone: NgZone) {
     _ngZone.runOutsideAngular(() => {

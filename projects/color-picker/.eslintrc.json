@@ -18,7 +18,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "NgxMat",
+            "prefix": "ngxMat",
             "style": "camelCase"
           }
         ],
@@ -26,7 +26,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "NgxMat",
+            "prefix": "ngx-mat",
             "style": "kebab-case"
           }
         ]

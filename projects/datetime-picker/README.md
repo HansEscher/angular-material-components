@@ -39,10 +39,10 @@ Choose the version corresponding to your Angular version:
 
  Angular     | @angular-material-components/datetime-picker
  ----------- | -------------------
- 10          | 4.x+              
- 9           | 2.x+              
- 8           | 2.x+              
- 7           | 2.x+                 
+ 10          | 4.x+
+ 9           | 2.x+
+ 8           | 2.x+
+ 7           | 2.x+
 
 ```
 npm install --save  @angular-material-components/datetime-picker
@@ -86,7 +86,7 @@ The same API as @angular/material Datepicker (@see [API docs](https://material.a
    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
    <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
       [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond"
-      [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" 
+      [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian"
       [disableMinute]="disableMinute" [hideTime]="hideTime">
    </ngx-mat-datetime-picker>
 </mat-form-field>
@@ -137,7 +137,7 @@ The easiest way to ensure this is to import one of the provided date modules:
 | **Dependencies**      	| None                       	| [Moment.js](https://momentjs.com/)                                                  	|
 | **Import from**       	| @angular-material-components/datetime-picker    	| [@angular-material-components/moment-adapter](https://www.npmjs.com/package/@angular-material-components/moment-adapter)      	|
 
-To use NgxMatMomentModule: 
+To use NgxMatMomentModule:
    ```
    npm install --save  @angular-material-components/moment-adapter
    ```
@@ -186,7 +186,7 @@ const CUSTOM_DATE_FORMATS: NgxMatDateFormats = {
   }
 };
 
-//and in the module providers 
+//and in the module providers
 providers: [
     { provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS }
   ]

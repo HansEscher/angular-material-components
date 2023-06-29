@@ -44,7 +44,7 @@ export class Color {
             "rgba(" + Math.round(this.r) + ", " + Math.round(this.g) + ", " + Math.round(this.b) + ", " + this.roundA + ")";
     }
 
-    public toHex8(allow4Char): string {
+    public toHex8(allow4Char?: boolean): string {
         return rgbaToHex(this.r, this.g, this.b, this.a, allow4Char);
     }
 
@@ -53,11 +53,11 @@ export class Color {
     }
 
     public toString(format: ColorInputFormat): string {
-        let formatSet = !!format;
+        const formatSet = !!format;
 
         let formattedString;
-        let hasAlpha = this.a < 1 && this.a >= 0;
-        let needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6"
+        const hasAlpha = this.a < 1 && this.a >= 0;
+        const needsAlphaFormat = !formatSet && hasAlpha && (format === "hex" || format === "hex6"
             || format === "hex3" || format === "hex4" || format === "hex8");
 
         if (needsAlphaFormat) {

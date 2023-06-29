@@ -7,7 +7,7 @@ export class ColorAdapter {
 
   constructor() { }
 
-  sameColor(a: Color, b: Color) {
+  sameColor(a: Color | null, b: Color | null) {
     if (a == null && b == null) return true;
     if (a != null && b != null) return a.rgba === b.rgba;
     return false;

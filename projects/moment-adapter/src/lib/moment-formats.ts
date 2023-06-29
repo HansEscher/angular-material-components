@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { NgxMatDateFormats } from '@angular-material-components/datetime-picker';
+import { NgxMatDateFormats } from "projects/datetime-picker/src";
+// from '@angular-material-components/datetime-picker';
 
 const DEFAULT_DATE_INPUT = 'l, LTS';
 

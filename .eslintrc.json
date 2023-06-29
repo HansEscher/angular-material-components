@@ -1,5 +1,13 @@
 {
   "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@angular-eslint/recommended",
+    "plugin:@angular-eslint/template/process-inline-templates"
+  ],
+  "rules": {
+  },
   "ignorePatterns": [
     "projects/**/*"
   ],
@@ -10,30 +18,39 @@
       ],
       "parserOptions": {
         "project": [
-          "tsconfig.json",
-          "e2e/tsconfig.json"
+          "tsconfig.json"
         ],
         "createDefaultProgram": true
       },
       "extends": [
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
-        "@angular-eslint/component-selector": [
-          "error",
-          {
-            "prefix": "NgxMat",
-            "style": "kebab-case",
-            "type": "element"
-          }
-        ],
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-empty": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "@angular-eslint/template/click-events-have-key-events": "off",
+        "@angular-eslint/template/interactive-supports-focus": "off",
+        "eslint@typescript-eslint/no-this-alias": "off",
+        "no-case-declarations": "off",
+        "@angular-eslint/no-output-on-prefix": "off",
+        "@angular-eslint/directive-class-suffix": "off",
         "@angular-eslint/directive-selector": [
           "error",
           {
-            "prefix": "NgxMat",
+            "prefix": ["ngxMat"],
             "style": "camelCase",
             "type": "attribute"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "prefix": ["ngx-mat", "app"],
+            "style": "kebab-case",
+            "type": "element"
           }
         ]
       }
@@ -45,7 +62,15 @@
       "extends": [
         "plugin:@angular-eslint/template/recommended"
       ],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-empty": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "@angular-eslint/template/click-events-have-key-events": "off",
+        "@angular-eslint/template/interactive-supports-focus": "off"      }
     }
   ]
 }

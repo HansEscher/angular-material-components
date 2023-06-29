@@ -16,8 +16,8 @@ export class DemoDatetimeComponent implements OnInit {
   public showSeconds = false;
   public touchUi = false;
   public enableMeridian = false;
-  public minDate: Date;
-  public maxDate: Date;
+  public minDate: Date | null = null;
+  public maxDate: Date | null = null;
   public stepHour = 1;
   public stepMinute = 1;
   public stepSecond = 1;
@@ -25,7 +25,7 @@ export class DemoDatetimeComponent implements OnInit {
   public disableMinute = false;
   public hideTime = false;
 
-  public dateControl = new FormControl(null);
+  public dateControl = new FormControl<Date|null>(null);
 
   public options = [
     { value: true, label: 'True' },
@@ -56,11 +56,11 @@ export class DemoDatetimeComponent implements OnInit {
 </mat-form-field>`;
 
   public code2 = `import {
-           NgxMatDatetimePickerModule, 
-           NgxMatNativeDateModule, 
-           NgxMatTimepickerModule 
+           NgxMatDatetimePickerModule,
+           NgxMatNativeDateModule,
+           NgxMatTimepickerModule
   } from '@angular-material-components/datetime-picker';
-  
+
 @NgModule({
   imports: [
     ...
@@ -100,7 +100,7 @@ const CUSTOM_DATE_FORMATS: NgxMatDateFormats = {
   }
 };
 
-//and in the module providers 
+//and in the module providers
 providers: [
     { provide: NGX_MAT_DATE_FORMATS, useValue: CUSTOM_MOMENT_FORMATS }
   ]`;

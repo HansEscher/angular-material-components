@@ -52,6 +52,7 @@ import { createMissingDateImplError } from './utils/date-utils';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
   private _rerenderSubscription = Subscription.EMPTY;
 
@@ -59,7 +60,7 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
   @Input()
   get activeDate(): D { return this._activeDate; }
   set activeDate(value: D) {
-    let oldActiveDate = this._activeDate;
+    const oldActiveDate = this._activeDate;
     const validDate =
       this._getValidDateOrNull(this._dateAdapter.deserialize(value)) || this._dateAdapter.today();
     this._activeDate = this._dateAdapter.clampDate(validDate, this.minDate, this.maxDate);
@@ -81,7 +82,7 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
 
     this._setSelectedMonth(value);
   }
-  private _selected: DateRange<D> | D | null;
+  private _selected: DateRange<D> | D | null = null;
 
   /** The minimum selectable date. */
   @Input()
@@ -89,7 +90,7 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
   set minDate(value: D | null) {
     this._minDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _minDate: D | null;
+  private _minDate: D | null = null;
 
   /** The maximum selectable date. */
   @Input()
@@ -97,10 +98,10 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
   set maxDate(value: D | null) {
     this._maxDate = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
   }
-  private _maxDate: D | null;
+  private _maxDate: D | null = null;
 
   /** A function used to filter which dates are selectable. */
-  @Input() dateFilter: (date: D) => boolean;
+  @Input() dateFilter!: (date: D) => boolean;
 
   /** Emits when a new month is selected. */
   @Output() readonly selectedChange: EventEmitter<D> = new EventEmitter<D>();
@@ -112,22 +113,22 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
   @Output() readonly activeDateChange: EventEmitter<D> = new EventEmitter<D>();
 
   /** The body of calendar table */
-  @ViewChild(NgxMatCalendarBody) _matCalendarBody: NgxMatCalendarBody;
+  @ViewChild(NgxMatCalendarBody) _matCalendarBody!: NgxMatCalendarBody;
 
   /** Grid of calendar cells representing the months of the year. */
-  _months: NgxMatCalendarCell[][];
+  _months!: NgxMatCalendarCell[][];
 
   /** The label for this year (e.g. "2017"). */
-  _yearLabel: string;
+  _yearLabel!: string;
 
   /** The month in this year that today falls on. Null if today is in a different year. */
-  _todayMonth: number | null;
+  _todayMonth: number | null = null;
 
   /**
    * The month in this year that the selected Date falls on.
    * Null if the selected Date is in a different year.
    */
-  _selectedMonth: number | null;
+  _selectedMonth: number | null = null;
 
   constructor(private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(NGX_MAT_DATE_FORMATS) private _dateFormats: NgxMatDateFormats,
@@ -230,7 +231,7 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
     this._todayMonth = this._getMonthInCurrentYear(this._dateAdapter.today());
     this._yearLabel = this._dateAdapter.getYearName(this.activeDate);
 
-    let monthNames = this._dateAdapter.getMonthNames('short');
+    const monthNames = this._dateAdapter.getMonthNames('short');
     // First row of months only contains 5 elements so we can fit the year label on the same row.
     this._months = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]].map(row => row.map(
       month => this._createCellForMonth(month, monthNames[month])));
@@ -253,7 +254,7 @@ export class NgxMatYearView<D> implements AfterContentInit, OnDestroy {
 
   /** Creates an MatCalendarCell for the given month. */
   private _createCellForMonth(month: number, monthName: string) {
-    let ariaLabel = this._dateAdapter.format(
+    const ariaLabel = this._dateAdapter.format(
       this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1),
       this._dateFormats.display.monthYearA11yLabel);
     return new NgxMatCalendarCell(

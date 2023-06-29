@@ -16,7 +16,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import * as _moment from 'moment';
 // eslint-disable-next-line no-duplicate-imports
 import { default as _rollupMoment, Moment, MomentFormatSpecification, MomentInput } from 'moment';
-import { NgxMatDateAdapter } from '@angular-material-components/datetime-picker';
+import { NgxMatDateAdapter } from 'projects/datetime-picker/src';
+//  from '@angular-material-components/datetime-picker';
 
 const moment = _rollupMoment || _moment;
 
@@ -72,14 +73,14 @@ export class NgxMatMomentAdapter extends NgxMatDateAdapter<Moment> {
   // while avoiding mutating the original object passed to us. Just calling `.locale(...)` on the
   // input would mutate the object.
 
-  private _localeData: {
-    firstDayOfWeek: number,
-    longMonths: string[],
-    shortMonths: string[],
-    dates: string[],
-    longDaysOfWeek: string[],
-    shortDaysOfWeek: string[],
-    narrowDaysOfWeek: string[]
+  private _localeData!: {
+    firstDayOfWeek: number;
+    longMonths: string[];
+    shortMonths: string[];
+    dates: string[];
+    longDaysOfWeek: string[];
+    shortDaysOfWeek: string[];
+    narrowDaysOfWeek: string[];
   };
 
   constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
@@ -90,10 +91,10 @@ export class NgxMatMomentAdapter extends NgxMatDateAdapter<Moment> {
     this.setLocale(dateLocale || moment.locale());
   }
 
-  setLocale(locale: string) {
+  override setLocale(locale: string) {
     super.setLocale(locale);
 
-    let momentLocaleData = moment.localeData(locale);
+    const momentLocaleData = moment.localeData(locale);
     this._localeData = {
       firstDayOfWeek: momentLocaleData.firstDayOfWeek(),
       longMonths: momentLocaleData.months(),
@@ -217,7 +218,7 @@ export class NgxMatMomentAdapter extends NgxMatDateAdapter<Moment> {
    * (https://www.ietf.org/rfc/rfc3339.txt) and valid Date objects into valid Moments and empty
    * string into null. Returns an invalid date for all other values.
    */
-  deserialize(value: any): Moment | null {
+  override deserialize(value: any): Moment | null {
     let date;
     if (value instanceof Date) {
       date = this._createMoment(value).locale(this.locale);

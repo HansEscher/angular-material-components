@@ -14,9 +14,9 @@ const presetFile = new File([], "file 1");
 export class DemoFileInputComponent implements OnInit {
 
   color: ThemePalette = 'primary';
-  disabled: boolean = false;
-  multiple: boolean = false;
-  accept: string;
+  disabled = false;
+  multiple = false;
+  accept!: string;
 
   fileControl: FormControl;
   file2Control: FormControl;
@@ -35,7 +35,7 @@ export class DemoFileInputComponent implements OnInit {
     ".doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ];
 
-  public files;
+  public files!: any;
 
   code3 = `<mat-form-field>
   <ngx-mat-file-input [formControl]="fileControl" [multiple]="multiple" [accept]="accept" [color]="color">
@@ -57,7 +57,7 @@ export class DemoFileInputComponent implements OnInit {
   code1 = `npm install --save @angular-material-components/file-input`;
 
   code2 = `import { NgxMatFileInputModule } from '@angular-material-components/file-input';
-  
+
   @NgModule({
      ...
      imports: [

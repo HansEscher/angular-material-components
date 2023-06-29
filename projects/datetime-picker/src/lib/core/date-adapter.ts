@@ -48,8 +48,8 @@ export abstract class NgxMatDateAdapter<D> extends DateAdapter<D> {
    * @param a Date 1
    * @param b Date 2
    */
-  isSameTime(a: D, b: D): boolean {
-    if (a == null || b == null) return true;
+  isSameTime(a: D | null, b: D | null): boolean {
+    if (a === null || b === null) return true;
     return this.getHour(a) === this.getHour(b)
       && this.getMinute(a) === this.getMinute(b)
       && this.getSecond(a) === this.getSecond(b);
@@ -57,8 +57,8 @@ export abstract class NgxMatDateAdapter<D> extends DateAdapter<D> {
 
   /**
    * Copy time from a date to a another date
-   * @param toDate 
-   * @param fromDate 
+   * @param toDate
+   * @param fromDate
    */
   copyTime(toDate: D, fromDate: D) {
     this.setHour(toDate, this.getHour(fromDate));

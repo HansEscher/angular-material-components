@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, Output, EventEmitter, Input, HostBinding } from '@angular/core';
 import { Color } from '../../models';
 
 @Component({
@@ -6,22 +6,22 @@ import { Color } from '../../models';
   templateUrl: 'color-palette.component.html',
   styleUrls: ['color-palette.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  host: {
-    'class': 'ngx-mat-color-palette'
-  }
+
 })
 export class NgxMatColorPaletteComponent implements OnInit {
+  @HostBinding('class') fixClass = 'ngx-mat-color-palette';
 
-  @Output() colorChanged: EventEmitter<Color> = new EventEmitter<Color>();
+  @Output() colorChanged: EventEmitter<Color|null> = new EventEmitter<Color|null>();
 
-  @Input() color: Color;
+  @Input()
+  color: Color | null = null;
 
   constructor() { }
 
   ngOnInit() {
   }
 
-  public handleColorChanged(color: Color) {
+  public handleColorChanged(color: Color|null) {
     this.colorChanged.emit(color);
   }
 
