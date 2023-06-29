@@ -98,6 +98,15 @@
               "src/assets"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -116,6 +125,15 @@
             "production": {
               "devServerTarget": "angular-material-components:serve:production"
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "e2e//**/*.ts",
+              "e2e//**/*.html"
+            ]
           }
         }
       }
@@ -140,6 +158,15 @@
             "tsConfig": "projects/datetime-picker/tsconfig.spec.json",
             "karmaConfig": "projects/datetime-picker/karma.conf.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/datetime-picker/**/*.ts",
+              "projects/datetime-picker/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -162,6 +189,15 @@
             "main": "projects/moment-adapter/src/test.ts",
             "tsConfig": "projects/moment-adapter/tsconfig.spec.json",
             "karmaConfig": "projects/moment-adapter/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/moment-adapter/**/*.ts",
+              "projects/moment-adapter/**/*.html"
+            ]
           }
         }
       }
@@ -186,6 +222,15 @@
             "tsConfig": "projects/color-picker/tsconfig.spec.json",
             "karmaConfig": "projects/color-picker/karma.conf.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/color-picker/**/*.ts",
+              "projects/color-picker/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -208,6 +253,15 @@
             "main": "projects/file-input/src/test.ts",
             "tsConfig": "projects/file-input/tsconfig.spec.json",
             "karmaConfig": "projects/file-input/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/file-input/**/*.ts",
+              "projects/file-input/**/*.html"
+            ]
           }
         }
       }
