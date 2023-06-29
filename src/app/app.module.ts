@@ -1,9 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { MatLegacyCardModule as MatCardModule } from '@angular/material/legacy-card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,19 +18,19 @@ const appRoutes: Routes = [
    { path: 'home', component: HomeComponent },
    {
       path: 'datetimepicker',
-      loadChildren: './demo-datetime/demo-datetime.module#DemoDatetimeModule'
+      loadChildren: () => import('./demo-datetime/demo-datetime.module').then(m => m.DemoDatetimeModule)
    },
    {
       path: 'timepicker',
-      loadChildren: './demo-time/demo-time.module#DemoTimeModule'
+      loadChildren: () => import('./demo-time/demo-time.module').then(m => m.DemoTimeModule)
    },
    {
       path: 'colorpicker',
-      loadChildren: './demo-colorpicker/demo-colorpicker.module#DemoColorpickerModule'
+      loadChildren: () => import('./demo-colorpicker/demo-colorpicker.module').then(m => m.DemoColorpickerModule)
    },
    {
       path: 'fileinput',
-      loadChildren: './demo-fileinput/demo-fileinput.module#DemoFileInputModule'
+      loadChildren: () => import('./demo-fileinput/demo-fileinput.module').then(m => m.DemoFileInputModule)
    },
    { path: '', redirectTo: '/datetimepicker', pathMatch: 'full' },
    { path: '**', redirectTo: '/datetimepicker', pathMatch: 'full' }

@@ -10,8 +10,8 @@ import { DOWN_ARROW } from '@angular/cdk/keycodes';
 import { Directive, ElementRef, EventEmitter, forwardRef, Inject, Input, OnDestroy, Optional, Output } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator, ValidatorFn, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
-import { MatFormField } from '@angular/material/form-field';
-import { MAT_INPUT_VALUE_ACCESSOR } from '@angular/material/input';
+import { MatLegacyFormField as MatFormField } from '@angular/material/legacy-form-field';
+import { MAT_LEGACY_INPUT_VALUE_ACCESSOR as MAT_INPUT_VALUE_ACCESSOR } from '@angular/material/legacy-input';
 import { Subscription } from 'rxjs';
 import { NgxMatDateAdapter } from './core/date-adapter';
 import { NgxMatDateFormats, NGX_MAT_DATE_FORMATS } from './core/date-formats';
@@ -148,7 +148,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
 
         if (this._disabled !== newValue) {
             this._disabled = newValue;
-            this._disabledChange.emit(newValue);
+            this.stateChanges.emit(undefined);
         }
 
         // We need to null check the `blur` method, because it's undefined during SSR.
@@ -173,7 +173,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
     _valueChange = new EventEmitter<D | null>();
 
     /** Emits when the disabled state has changed */
-    _disabledChange = new EventEmitter<boolean>();
+    stateChanges = new EventEmitter<void>();
 
     _onTouched = () => { };
 
@@ -244,7 +244,7 @@ export class NgxMatDatetimeInput<D> implements ControlValueAccessor, OnDestroy, 
         this._datepickerSubscription.unsubscribe();
         this._localeSubscription.unsubscribe();
         this._valueChange.complete();
-        this._disabledChange.complete();
+        this.stateChanges.complete();
     }
 
     /** @docs-private */
