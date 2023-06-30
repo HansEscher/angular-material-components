@@ -15,7 +15,7 @@ export class NumericColorInputDirective {
 
   /**
 * Format input
-* @param input 
+* @param input
 */
   private _formatInput(input: any) {
     let val = Number(input.value.replace(NUMERIC_REGEX, ''));

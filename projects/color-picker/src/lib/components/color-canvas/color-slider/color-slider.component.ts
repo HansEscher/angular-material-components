@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Color } from '../../../models';
 import { getColorAtPosition } from '../../../helpers';
 import { NgxMatBaseColorCanvas } from '../base-color-canvas';
@@ -10,15 +10,14 @@ import { NgxMatBaseColorCanvas } from '../base-color-canvas';
 })
 export class NgxMatColorSliderComponent extends NgxMatBaseColorCanvas implements OnInit {
 
-  constructor(protected zone: NgZone) {
+  constructor(protected override zone: NgZone) {
     super(zone,'color-strip');
   }
 
   ngOnInit() {
-
   }
 
-  ngAfterViewInit(): void {
+  override ngAfterViewInit(): void {
     super.ngAfterViewInit();
   }
 

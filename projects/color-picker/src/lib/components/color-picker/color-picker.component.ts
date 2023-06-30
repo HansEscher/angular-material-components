@@ -4,10 +4,10 @@ import { ESCAPE, UP_ARROW } from '@angular/cdk/keycodes';
 import { Overlay, OverlayConfig, OverlayRef, PositionStrategy, ScrollStrategy } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ComponentRef, ElementRef, EventEmitter, Inject, InjectionToken, Input, NgZone, OnDestroy, OnInit, Optional, Output, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
-import { CanColor, CanColorCtor, mixinColor, ThemePalette } from '@angular/material/core';
+import { ChangeDetectionStrategy, Component, ComponentRef, ElementRef, EventEmitter, HostBinding, Inject, InjectionToken, Input, NgZone, OnDestroy, OnInit, Optional, Output, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
+import { CanColor, mixinColor, ThemePalette } from '@angular/material/core';
 import { matDatepickerAnimations } from '@angular/material/datepicker';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { merge, Subject, Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { Color } from '../../models';
@@ -31,43 +31,40 @@ export const NGX_MAT_COLOR_PICKER_SCROLL_STRATEGY_FACTORY_PROVIDER = {
   useFactory: NGX_MAT_COLOR_PICKER_SCROLL_STRATEGY_FACTORY,
 };
 
-class NgxMatColorPickerContentBase {
-  constructor(public _elementRef: ElementRef) { }
-}
-const _MatDatepickerContentMixinBase: CanColorCtor & typeof NgxMatColorPickerContentBase =
-  mixinColor(NgxMatColorPickerContentBase);
+const _MatColorpickerContentBase = mixinColor(
+  class {
+    constructor(public _elementRef: ElementRef) { }
+  },
+);
+
 
 @Component({
   selector: 'ngx-mat-color-picker-content',
   templateUrl: './color-picker-content.component.html',
   styleUrls: ['color-picker-content.component.scss'],
-  host: {
-    'class': 'ngx-mat-colorpicker-content',
-    '[@transformPanel]': '"enter"',
-    '[class.ngx-mat-colorpicker-content-touch]': 'picker.touchUi',
-  },
   animations: [
     matDatepickerAnimations.transformPanel,
     matDatepickerAnimations.fadeInCalendar,
   ],
   exportAs: 'ngxMatColorPickerContent',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['color']
+  changeDetection: ChangeDetectionStrategy.OnPush
+  // inputs: ['color']
 })
-export class NgxMatColorPickerContentComponent extends _MatDatepickerContentMixinBase
-  implements CanColor {
+export class NgxMatColorPickerContentComponent extends _MatColorpickerContentBase implements CanColor {
+  @HostBinding('class') fixClass = 'ngx-mat-colorpicker-content';
+  @HostBinding('class.ngx-mat-colorpicker-content-touch') fixTouch = 'picker.touchUi';
+  // @HostListener('@transformPanel.enter', ['$event']) onEnter(_:Event) {}
 
   /** Reference to the internal calendar component. */
-  @ViewChild(NgxMatColorPaletteComponent) _palette: NgxMatColorPaletteComponent;
+  @ViewChild(NgxMatColorPaletteComponent) _palette!: NgxMatColorPaletteComponent;
 
-  picker: NgxMatColorPickerComponent;
-  _isAbove: boolean;
+  picker!: NgxMatColorPickerComponent;
+  _isAbove!: boolean;
 
   constructor(elementRef: ElementRef) {
     super(elementRef);
   }
-
 }
 
 @Component({
@@ -82,9 +79,11 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
   private _scrollStrategy: () => ScrollStrategy;
 
   /** Emits when the datepicker has been opened. */
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('opened') openedStream: EventEmitter<void> = new EventEmitter<void>();
 
   /** Emits when the datepicker has been closed. */
+  // eslint-disable-next-line @angular-eslint/no-output-rename
   @Output('closed') closedStream: EventEmitter<void> = new EventEmitter<void>();
 
   @Input() get disabled() {
@@ -99,7 +98,7 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
       this._disabledChange.next(newValue);
     }
   }
-  private _disabled: boolean;
+  private _disabled!: boolean;
 
   @Input()
   get touchUi(): boolean { return this._touchUi; }
@@ -114,6 +113,16 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
   set opened(value: boolean) { value ? this.open() : this.close(); }
   private _opened = false;
 
+  /** Default Color palette to use on the datepicker's calendar. */
+  @Input()
+  get defaultColor(): ThemePalette {
+    return this._defaultColor;
+  }
+  set defaultColor(value: ThemePalette) {
+    this._defaultColor = value;
+  }
+  _defaultColor: ThemePalette = 'primary';
+
   /** Color palette to use on the datepicker's calendar. */
   @Input()
   get color(): ThemePalette {
@@ -126,22 +135,22 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
   _color: ThemePalette;
 
 
-  /** The currently selected date. */
-  get _selected(): Color { return this._validSelected; }
-  set _selected(value: Color) { this._validSelected = value; }
-  private _validSelected: Color = null;
+  /** The currently selected color. */
+  get _selected(): Color | null { return this._validSelected; }
+  set _selected(value: Color | null) { this._validSelected = value; }
+  private _validSelected: Color | null = null;
 
 
-  _pickerInput: NgxMatColorPickerInput;
+  _pickerInput!: NgxMatColorPickerInput;
   /** A reference to the overlay when the picker is opened as a popup. */
-  _popupRef: OverlayRef;
+  _popupRef!: OverlayRef;
 
   /** A reference to the dialog when the picker is opened as a dialog. */
-  private _dialogRef: MatDialogRef<NgxMatColorPickerContentComponent> | null;
+  private _dialogRef!: MatDialogRef<NgxMatColorPickerContentComponent> | null;
   /** Reference to the component instantiated in popup mode. */
-  private _popupComponentRef: ComponentRef<NgxMatColorPickerContentComponent> | null;
+  private _popupComponentRef!: ComponentRef<NgxMatColorPickerContentComponent> | null;
   /** A portal containing the content for this picker. */
-  private _portal: ComponentPortal<NgxMatColorPickerContentComponent>;
+  private _portal!: ComponentPortal<NgxMatColorPickerContentComponent>;
 
   /** Emits when the datepicker is disabled. */
   readonly _disabledChange = new Subject<boolean>();
@@ -153,7 +162,7 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
   private _inputSubscription = Subscription.EMPTY;
 
   /** Emits new selected date when selected date changes. */
-  readonly _selectedChanged = new Subject<Color>();
+  readonly _selectedChanged = new Subject<Color|null>();
 
   constructor(private _dialog: MatDialog,
     private _overlay: Overlay,
@@ -181,9 +190,9 @@ export class NgxMatColorPickerComponent implements OnInit, OnDestroy, CanColor {
   }
 
 
-  /** Selects the given date */
-  select(nextVal: Color): void {
-    let oldValue = this._selected;
+  /** Selects the given color */
+  select(nextVal: Color | null): void {
+    const oldValue = this._selected;
     this._selected = nextVal;
     if (!this._adapter.sameColor(oldValue, this._selected)) {
       this._selectedChanged.next(nextVal);

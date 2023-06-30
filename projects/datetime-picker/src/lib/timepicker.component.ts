@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, forwardRef, Input, OnChanges, OnInit, Optional, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { ControlValueAccessor, FormBuilder, FormGroup, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, forwardRef, HostBinding, Input, OnChanges, OnInit, Optional, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { ControlValueAccessor, FormBuilder, FormControl, FormGroup, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -10,9 +10,6 @@ import { createMissingDateImplError, DEFAULT_STEP, formatTwoDigitTimeValue, LIMI
   selector: 'ngx-mat-timepicker',
   templateUrl: './timepicker.component.html',
   styleUrls: ['./timepicker.component.scss'],
-  host: {
-    'class': 'ngx-mat-timepicker'
-  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -24,8 +21,9 @@ import { createMissingDateImplError, DEFAULT_STEP, formatTwoDigitTimeValue, LIMI
   encapsulation: ViewEncapsulation.None,
 })
 export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnInit, OnChanges {
+  @HostBinding('class') hostClass = 'ngx-mat-timepicker';
 
-  public form: FormGroup;
+  public form: FormGroup<{hour: FormControl, minute: FormControl, second: FormControl}>;
 
   @Input() disabled = false;
   @Input() showSpinners = true;
@@ -35,26 +33,26 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
   @Input() showSeconds = false;
   @Input() disableMinute = false;
   @Input() enableMeridian = false;
-  @Input() defaultTime: number[];
+  @Input() defaultTime!: number[];
   @Input() color: ThemePalette = 'primary';
 
   public meridian: string = MERIDIANS.AM;
 
   /** Hour */
   private get hour() {
-    let val = Number(this.form.controls['hour'].value);
+    const val = Number(this.form.controls['hour'].value);
     return isNaN(val) ? 0 : val;
-  };
+  }
 
   private get minute() {
-    let val = Number(this.form.controls['minute'].value);
+    const val = Number(this.form.controls['minute'].value);
     return isNaN(val) ? 0 : val;
-  };
+  }
 
   private get second() {
-    let val = Number(this.form.controls['second'].value);
+    const val = Number(this.form.controls['second'].value);
     return isNaN(val) ? 0 : val;
-  };
+  }
 
   /** Whether or not the form is valid */
   public get valid(): boolean {
@@ -63,8 +61,8 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
 
   private _onChange: any = () => { };
   private _onTouched: any = () => { };
-  private _disabled: boolean;
-  private _model: D;
+  private _disabled!: boolean;
+  private _model!: D;
 
   private _destroyed: Subject<void> = new Subject<void>();
 
@@ -82,6 +80,9 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
         second: [{ value: null, disabled: this.disabled }, [Validators.required, Validators.pattern(PATTERN_INPUT_SECOND)]]
       });
   }
+  registerOnTouched(fn: any): void {
+    this._onTouched = fn;
+  }
 
   ngOnInit() {
     this.form.valueChanges.pipe(takeUntil(this._destroyed), debounceTime(400)).subscribe(val => {
@@ -90,12 +91,9 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.disabled && !changes.disabled.firstChange) {
-      this.disabled ? this.form.disable() : this.form.enable();
+    if (changes['disabled'] || changes['disableMinute']) {
+      this._setDisableStates();
     }
-
-    this.disableMinute ? this.form.get('minute').disable() : this.form.get('minute').enable();
-
   }
 
   ngOnDestroy() {
@@ -120,16 +118,16 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
   }
 
   /** Registers a callback function that is called when the control's value changes in the UI. */
-  registerOnChange(fn: (_: any) => {}): void {
+  registerOnChange(fn: (_: any) => any): void {
     this._onChange = fn;
   }
 
-  /**
-   * Set the function to be called when the control receives a touch event.
-   */
-  registerOnTouched(fn: () => {}): void {
-    this._onTouched = fn;
-  }
+  // /**
+  //  * Set the function to be called when the control receives a touch event.
+  //  */
+  // registerOnTouched(fn: () => any): void {
+  //   this._onTouched = fn;
+  // }
 
   /** Enables or disables the appropriate DOM element */
   setDisabledState(isDisabled: boolean): void {
@@ -139,7 +137,7 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
 
   /**
    * Format input
-   * @param input 
+   * @param input
    */
   public formatInput(input: HTMLInputElement) {
     input.value = input.value.replace(NUMERIC_REGEX, '');
@@ -152,7 +150,7 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
   }
 
   /** Change property of time */
-  public change(prop: string, up?: boolean) {
+  public change(prop: 'hour' | 'minute' | 'second', up?: boolean) {
     const next = this._getNextValueByProp(prop, up);
     this.form.controls[prop].setValue(formatTwoDigitTimeValue(next), { onlySelf: false, emitEvent: false });
     this._updateModel();
@@ -165,11 +163,14 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
     const _second = this._dateAdapter.getSecond(this._model);
 
     if (this.enableMeridian) {
-      if (_hour > LIMIT_TIMES.meridian) {
+      if (_hour >= LIMIT_TIMES.meridian) {
         _hour = _hour - LIMIT_TIMES.meridian;
         this.meridian = MERIDIANS.PM;
       } else {
         this.meridian = MERIDIANS.AM;
+      }
+      if (_hour === 0) {
+        _hour = LIMIT_TIMES.meridian;
       }
     }
 
@@ -181,8 +182,13 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
   /** Update model */
   private _updateModel() {
     let _hour = this.hour;
-    if (this.enableMeridian && this.meridian === MERIDIANS.PM && _hour !== LIMIT_TIMES.meridian) {
-      _hour = _hour + LIMIT_TIMES.meridian;
+
+    if (this.enableMeridian) {
+      if (this.meridian === MERIDIANS.AM && _hour === LIMIT_TIMES.meridian) {
+        _hour = 0;
+      } else if (this.meridian === MERIDIANS.PM && _hour !== LIMIT_TIMES.meridian) {
+        _hour = _hour + LIMIT_TIMES.meridian;
+      }
     }
 
     this._dateAdapter.setHour(this._model, _hour);
@@ -193,23 +199,44 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
 
   /**
    * Get next value by property
-   * @param prop 
+   * @param prop
    * @param up
    */
-  private _getNextValueByProp(prop: string, up?: boolean): number {
-    const keyProp = prop[0].toUpperCase() + prop.slice(1);
-    const min = LIMIT_TIMES[`min${keyProp}`];
-    let max = LIMIT_TIMES[`max${keyProp}`];
-
-    if (prop === 'hour' && this.enableMeridian) {
-      max = LIMIT_TIMES.meridian;
+  private _getNextValueByProp(prop: 'hour' | 'minute' | 'second', up?: boolean): number {
+    let step: number;
+    let min: number;
+    let max: number;
+    switch (prop) {
+      case 'hour': {
+        step = this.stepHour;
+        min = LIMIT_TIMES.minHour;
+        max = LIMIT_TIMES.maxHour;
+        if (this.enableMeridian) {
+          max = LIMIT_TIMES.meridian;
+        }
+        break;
+      }
+      case 'minute': {
+        step = this.stepMinute;
+        min = LIMIT_TIMES.minMinute;
+        max = LIMIT_TIMES.maxMinute;
+        break;
+      }
+      case 'second': {
+        step = this.stepSecond;
+        min = LIMIT_TIMES.minSecond;
+        max = LIMIT_TIMES.maxSecond;
+        break;
+      }
     }
-
     let next;
     if (up == null) {
       next = this[prop] % (max);
+      if (prop === 'hour' && this.enableMeridian) {
+        if (next === 0) next = max;
+      }
     } else {
-      next = up ? this[prop] + this[`step${keyProp}`] : this[prop] - this[`step${keyProp}`];
+      next = up ? this[prop] + step : this[prop] - step;
       if (prop === 'hour' && this.enableMeridian) {
         next = next % (max + 1);
         if (next === 0) next = up ? 1 : max;
@@ -221,10 +248,26 @@ export class NgxMatTimepickerComponent<D> implements ControlValueAccessor, OnIni
       } else {
         next = next < min ? (next - min + max) : next;
       }
-
     }
-
     return next;
+  }
+
+  /**
+   * Set disable states
+   */
+  private _setDisableStates() {
+    if (this.disabled) {
+      this.form.disable();
+    }
+    else {
+      this.form.enable();
+      if (this.disableMinute) {
+        this.form.controls.minute.disable();
+        if (this.showSeconds) {
+          this.form.controls.second.disable();
+        }
+      }
+    }
   }
 
 }

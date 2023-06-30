@@ -85,7 +85,7 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
    * it here for sometime, just for precaution, in case we decide to revert some of these changes
    * though.
    */
-  useUtcForDisplay: boolean = true;
+  useUtcForDisplay = true;
 
   constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
     super();
@@ -172,7 +172,7 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
       throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
     }
 
-    let result = this._createDateWithOverflow(year, month, date);
+    const result = this._createDateWithOverflow(year, month, date);
     // Check that the date wasn't above the upper bound for the month, causing the month to overflow
     if (result.getMonth() != month) {
       throw Error(`Invalid date "${date}" for month with index "${month}".`);
@@ -194,7 +194,7 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
     return value ? new Date(Date.parse(value)) : null;
   }
 
-  format(date: Date, displayFormat: Object): string {
+  format(date: Date, displayFormat: {[key:string]: any}): string {
     if (!this.isValid(date)) {
       throw Error('NativeDateAdapter: Cannot format invalid date.');
     }
@@ -252,7 +252,7 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
    * (https://www.ietf.org/rfc/rfc3339.txt) into valid Dates and empty string into null. Returns an
    * invalid date for all other values.
    */
-  deserialize(value: any): Date | null {
+  override deserialize(value: any): Date | null {
     if (typeof value === 'string') {
       if (!value) {
         return null;
@@ -260,7 +260,7 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
       // The `Date` constructor accepts formats other than ISO 8601, so we need to make sure the
       // string is the right format first.
       if (ISO_8601_REGEX.test(value)) {
-        let date = new Date(value);
+        const date = new Date(value);
         if (this.isValid(date)) {
           return date;
         }
@@ -345,9 +345,11 @@ export class NgxMatNativeDateAdapter extends NgxMatDateAdapter<Date> {
    * @returns A Date object with its UTC representation based on the passed in date info
    */
   private _format(dtf: Intl.DateTimeFormat, date: Date) {
-    const d = new Date(Date.UTC(
-      date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
-      date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+    // Passing the year to the constructor causes year numbers <100 to be converted to 19xx.
+    // To work around this we use `setUTCFullYear` and `setUTCHours` instead.
+    const d = new Date();
+    d.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setUTCHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
     return dtf.format(d);
   }
 }

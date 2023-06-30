@@ -21,9 +21,9 @@ export const BASIC_COLORS = ["#ffffff", "#ffff00", "#ff00ff", "#ff0000",
 
 /**
  * Get color at position
- * @param ctx 
- * @param x 
- * @param y 
+ * @param ctx
+ * @param x
+ * @param y
  */
 export function getColorAtPosition(ctx: CanvasRenderingContext2D, x: number, y: number): { r: number, g: number, b: number } {
     const imageData: Uint8ClampedArray = ctx.getImageData(x, y, 1, 1).data;
@@ -35,11 +35,11 @@ export function getColorAtPosition(ctx: CanvasRenderingContext2D, x: number, y: 
 // Assumes r, g, b are contained in the set [0, 255] and
 // a in [0, 1]. Returns a 4 or 8 character rgba hex
 export function rgbaToHex(r: number, g: number, b: number, a: number, allow4Char?: boolean): string {
-    var hex = [
+    const hex = [
         pad2(mathRound(r).toString(16)),
         pad2(mathRound(g).toString(16)),
         pad2(mathRound(b).toString(16)),
-        pad2(convertDecimalToHex(a))
+        pad2(mathRound(a * 255).toString(16))
     ];
 
     // Return a 4 character hex if possible
@@ -51,22 +51,22 @@ export function rgbaToHex(r: number, g: number, b: number, a: number, allow4Char
 }
 
 // Force a hex value to have 2 characters
-export function pad2(c): string {
+export function pad2(c: string): string {
     return c.length == 1 ? '0' + c : '' + c;
 }
 
 // Converts a decimal to a hex value
-export function convertDecimalToHex(d) {
+export function convertDecimalToHex(d: string) {
     return Math.round(parseFloat(d) * 255).toString(16);
 }
 
 // Converts a hex value to a decimal
-function convertHexToDecimal(h) {
+function convertHexToDecimal(h: string) {
     return (parseIntFromHex(h) / 255);
 }
 
 // Parse a base-16 hex value into a base-10 integer
-function parseIntFromHex(val) {
+function parseIntFromHex(val: string) {
     return parseInt(val, 16);
 }
 
@@ -76,7 +76,7 @@ function parseIntFromHex(val) {
 // Returns a 3 or 6 character hex
 export function rgbToHex(r: number, g: number, b: number, allow3Char?: boolean) {
 
-    var hex = [
+    const hex = [
         pad2(mathRound(r).toString(16)),
         pad2(mathRound(g).toString(16)),
         pad2(mathRound(b).toString(16))
@@ -116,7 +116,7 @@ export const matchers = {
 // `stringInputToObject`
 // Permissive string parsing.  Take in a number of formats, and output an object
 // based on detected format.  Returns `{ r, g, b }` or `{ h, s, l }` or `{ h, s, v}`
-export function stringInputToObject(color: string): { r: number, g: number, b: number, a: number } {
+export function stringInputToObject(color: string): { r: number, g: number, b: number, a: number } | null {
 
     color = color.replace(trimLeft, '').replace(trimRight, '').toLowerCase();
 
@@ -125,12 +125,12 @@ export function stringInputToObject(color: string): { r: number, g: number, b: n
     // Just return an object and let the conversion functions handle that.
     // This way the result will be the same whether the tinycolor is initialized with string or object.
     let match;
-    let obj;
+    // let obj;
     if ((match = matchers.rgb.exec(color))) {
-        return { r: match[1], g: match[2], b: match[3], a: 1 };
+        return { r: Number(match[1]), g: Number(match[2]), b: Number(match[3]), a: 1 };
     }
     if ((match = matchers.rgba.exec(color))) {
-        return { r: match[1], g: match[2], b: match[3], a: match[4] };
+        return { r: Number(match[1]), g: Number(match[2]), b: Number(match[3]), a: Number(match[4])};
     }
 
     if ((match = matchers.hex8.exec(color))) {

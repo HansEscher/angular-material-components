@@ -1,22 +1,25 @@
-import { EventEmitter, Output, Input, OnDestroy, AfterViewInit, NgZone } from '@angular/core';
+import { EventEmitter, Output, Input, OnDestroy, AfterViewInit, NgZone, Directive } from '@angular/core';
 import { Color } from '../../models';
 import { Subject } from 'rxjs';
 
+@Directive({
+
+})
 export abstract class NgxMatBaseColorCanvas implements OnDestroy, AfterViewInit {
 
-	@Output() colorChanged: EventEmitter<Color> = new EventEmitter<Color>();
-	@Input() color: Color;
+	@Output() colorChanged: EventEmitter<Color | null> = new EventEmitter<Color | null>();
+	@Input() color: Color | null = null;
 
-	canvas: HTMLCanvasElement;
+	canvas!: HTMLCanvasElement;
 
 	elementId: string;
 
-	ctx: CanvasRenderingContext2D;
-	width: number;
-	height: number;
+	ctx!: CanvasRenderingContext2D;
+	width!: number;
+	height!: number;
 
-	x: number = 0;
-	y: number = 0;
+	x = 0;
+	y = 0;
 
 	drag = false;
 
@@ -33,7 +36,9 @@ export abstract class NgxMatBaseColorCanvas implements OnDestroy, AfterViewInit 
 
 	ngAfterViewInit(): void {
 		this.canvas = <HTMLCanvasElement>document.getElementById(this.elementId);
-		this.ctx = this.canvas.getContext('2d');
+		const forCtx = this.canvas.getContext('2d');
+		if (forCtx === null) throw new Error('2d canvas unavailable');
+		this.ctx = forCtx;
 		this.width = this.canvas.width;
 		this.height = this.canvas.height;
 		this.draw();
@@ -60,18 +65,18 @@ export abstract class NgxMatBaseColorCanvas implements OnDestroy, AfterViewInit 
 
 	public onMousemove(e: MouseEvent) {
 		if (this.drag) {
-			this.zone.run(() =>{
-				this.changeColor(e) ;
+			this.zone.run(() => {
+				this.changeColor(e);
 			})
 		}
 	}
 
-	public onMouseup(e: MouseEvent) {
+	public onMouseup(_: MouseEvent) {
 		this.drag = false;
 		this.canvas.removeEventListener('mousemove', this.onMousemove);
 	}
 
-	public emitChange(color: Color) {
+	public emitChange(color: Color | null) {
 		this.colorChanged.emit(color);
 	}
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -13,42 +13,40 @@ const RADIUS_NOB = 5;
   templateUrl: './color-canvas.component.html',
   styleUrls: ['./color-canvas.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  host: {
-    'class': 'ngx-mat-color-canvas'
-  }
+  // host: { 'class': 'ngx-mat-color-canvas' }
 })
-export class NgxMatColorCanvasComponent extends NgxMatBaseColorCanvas
-  implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class NgxMatColorCanvasComponent extends NgxMatBaseColorCanvas implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  @HostBinding('class') fixClass = 'ngx-mat-color-canvas';
 
-  private _baseColor: Color;
+  private _baseColor: Color|null = null;
 
   get rCtrl(): AbstractControl {
-    return this.formGroup.get('r');
+    return this.formGroup.controls.r;
   }
 
   get gCtrl(): AbstractControl {
-    return this.formGroup.get('g');
+    return this.formGroup.controls.g;
   }
 
   get bCtrl(): AbstractControl {
-    return this.formGroup.get('b');
+    return this.formGroup.controls.b;
   }
 
   get aCtrl(): AbstractControl {
-    return this.formGroup.get('a');
+    return this.formGroup.controls.a;
   }
 
   get hexCtrl(): AbstractControl {
-    return this.formGroup.get('hex');
+    return this.formGroup.controls.hex;
   }
 
   _resetBaseColor = true;
 
-  formGroup: FormGroup;
+  formGroup: FormGroup<{r: FormControl, g: FormControl, b: FormControl, a: FormControl, hex: FormControl}>;
 
-  rgba: string;
+  rgba!: string;
 
-  constructor(protected zone: NgZone) {
+  constructor(protected override zone: NgZone) {
     super(zone, 'color-block');
     this.formGroup = new FormGroup({
       r: new FormControl(null, [Validators.required]),
@@ -63,7 +61,7 @@ export class NgxMatColorCanvasComponent extends NgxMatBaseColorCanvas
 
     const rgbaCtrl$ = merge(this.rCtrl.valueChanges, this.gCtrl.valueChanges,
       this.bCtrl.valueChanges, this.aCtrl.valueChanges);
-    rgbaCtrl$.pipe(takeUntil(this._destroyed), debounceTime(400), distinctUntilChanged())
+    rgbaCtrl$.pipe(takeUntil(this._destroyed), debounceTime(400))
       .subscribe(_ => {
         const color = new Color(Number(this.rCtrl.value),
           Number(this.gCtrl.value), Number(this.bCtrl.value), Number(this.aCtrl.value));
@@ -82,15 +80,15 @@ export class NgxMatColorCanvasComponent extends NgxMatBaseColorCanvas
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.color && changes.color.currentValue) {
-      this.updateForm(changes.color.currentValue);
+    if (changes['color'] && changes['color'].currentValue) {
+      this.updateForm(changes['color'].currentValue);
       if (this._resetBaseColor) {
-        this._baseColor = changes.color.currentValue;
+        this._baseColor = changes['color'].currentValue;
       }
 
       this._resetBaseColor = true;
 
-      if (!changes.color.firstChange) {
+      if (!changes['color'].firstChange) {
         this.draw();
       }
     }
@@ -130,7 +128,7 @@ export class NgxMatColorCanvasComponent extends NgxMatBaseColorCanvas
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  public onSliderColorChanged(c: Color) {
+  public onSliderColorChanged(c: Color | null) {
     this._baseColor = c;
     this.color = c;
     this.fillGradient();
